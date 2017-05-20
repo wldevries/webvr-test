@@ -36,15 +36,16 @@ WebVRConfig = {
 import "../node_modules/es6-promise/dist/es6-promise.js";
 
 // three.js 3d library
-import * as THREE from 'three';
+//import import * as THREE from 'three';
+import {WebGLRenderer, Scene, BackSide, MeshNormalMaterial, MeshBasicMaterial, RepeatWrapping, BoxGeometry, Mesh, TextureLoader, PerspectiveCamera} from 'three';
 
 // VRControls.js acquires positional information from connected VR devices and applies the transformations to a three.js camera object.
 // import "../node_modules/three/examples/js/controls/VRControls.js";
-THREE.VRControls = require('imports-loader?THREE=three!exports-loader?THREE.VRControls!../node_modules/three/examples/js/controls/VRControls');
+const VRControls = require('imports-loader?THREE=three!exports-loader?THREE.VRControls!../node_modules/three/examples/js/controls/VRControls');
 
 // VREffect.js handles stereo camera setup and rendering.
 // import "../node_modules/three/examples/js/effects/VREffect.js";
-THREE.VREffect = require('imports-loader?THREE=three!exports-loader?THREE.VREffect!../node_modules/three/examples/js/effects/VREffect');
+const VREffect = require('imports-loader?THREE=three!exports-loader?THREE.VREffect!../node_modules/three/examples/js/effects/VREffect');
 
 // A polyfill for WebVR using the Device{Motion,Orientation}Event API.
 import "webvr-polyfill";
@@ -71,35 +72,35 @@ var vrButton;
 function onLoad() {
   // Setup three.js WebGL renderer. Note: Antialiasing is a big performance hit.
   // Only enable it if you actually need to.
-  var renderer = new THREE.WebGLRenderer({antialias: true});
+  var renderer = new WebGLRenderer({antialias: true});
   renderer.setPixelRatio(window.devicePixelRatio);
 
   // Append the canvas element created by the renderer to document body element.
   document.body.appendChild(renderer.domElement);
 
   // Create a three.js scene.
-  scene = new THREE.Scene();
+  scene = new Scene();
 
   // Create a three.js camera.
   var aspect = window.innerWidth / window.innerHeight;
-  camera = new THREE.PerspectiveCamera(75, aspect, 0.1, 10000);
+  camera = new PerspectiveCamera(75, aspect, 0.1, 10000);
 
-  controls = new THREE.VRControls(camera);
+  controls = new VRControls(camera);
   controls.standing = true;
   camera.position.y = controls.userHeight;
 
   // Apply VR stereo rendering to renderer.
-  effect = new THREE.VREffect(renderer);
+  effect = new VREffect(renderer);
   effect.setSize(window.innerWidth, window.innerHeight);
 
   // Add a repeating grid as a skybox.
-  var loader = new THREE.TextureLoader();
+  var loader = new TextureLoader();
   loader.load('img/box.png', onTextureLoaded);
 
   // Create 3D objects.
-  var geometry = new THREE.BoxGeometry(0.5, 0.5, 0.5);
-  var material = new THREE.MeshNormalMaterial();
-  cube = new THREE.Mesh(geometry, material);
+  var geometry = new BoxGeometry(0.5, 0.5, 0.5);
+  var material = new MeshNormalMaterial();
+  cube = new Mesh(geometry, material);
 
   // Position cube mesh to be right in front of you.
   cube.position.set(0, controls.userHeight, -1);
@@ -134,19 +135,19 @@ function onLoad() {
 }
 
 function onTextureLoaded(texture) {
-  texture.wrapS = THREE.RepeatWrapping;
-  texture.wrapT = THREE.RepeatWrapping;
+  texture.wrapS = RepeatWrapping;
+  texture.wrapT = RepeatWrapping;
   texture.repeat.set(boxSize, boxSize);
 
-  var geometry = new THREE.BoxGeometry(boxSize, boxSize, boxSize);
-  var material = new THREE.MeshBasicMaterial({
+  var geometry = new BoxGeometry(boxSize, boxSize, boxSize);
+  var material = new MeshBasicMaterial({
     map: texture,
     color: 0x01BE00,
-    side: THREE.BackSide
+    side: BackSide
   });
 
   // Align the skybox to the floor (which is at y=0).
-  skybox = new THREE.Mesh(geometry, material);
+  skybox = new Mesh(geometry, material);
   skybox.position.y = boxSize/2;
   scene.add(skybox);
 
