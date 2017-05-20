@@ -5,3 +5,5 @@ obj/
 [Bb]in/
 [Oo]bj/
 node_modules/
+
+wwwroot/dist/
