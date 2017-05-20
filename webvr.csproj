@@ -13,4 +13,8 @@
     <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="*" />
   </ItemGroup>
 
+  <Target Name="MyPreCompileTarget" BeforeTargets="Build">
+    <Exec Command="./node_modules/.bin/webpack.cmd" />
+  </Target>
+
 </Project>
