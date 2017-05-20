@@ -147,7 +147,7 @@ function onTextureLoaded(texture) {
   });
 
   // Align the skybox to the floor (which is at y=0).
-  skybox = new Mesh(geometry, material);
+  let skybox = new Mesh(geometry, material);
   skybox.position.y = boxSize/2;
   scene.add(skybox);
 
@@ -203,7 +203,7 @@ function setStageDimensions(stage) {
 
   // Size the skybox according to the size of the actual stage.
   var geometry = new THREE.BoxGeometry(stage.sizeX, boxSize, stage.sizeZ);
-  skybox = new THREE.Mesh(geometry, material);
+  let skybox = new THREE.Mesh(geometry, material);
 
   // Place it on the floor.
   skybox.position.y = boxSize/2;
