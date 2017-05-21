@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.AspNetCore.StaticFiles.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
@@ -28,12 +29,21 @@ namespace webvr
             loggerFactory.AddConsole();
 
             app.UseDefaultFiles();
+
+            var options = new StaticFileOptions
+			{
+				ContentTypeProvider = new FileExtensionContentTypeProvider()
+			};
+			((FileExtensionContentTypeProvider)options.ContentTypeProvider).Mappings.Add(
+				new KeyValuePair<string, string>(".obj", "text/plain"));
+            app.UseStaticFiles(options); 
             app.UseStaticFiles();
 
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
+            app.UseStatusCodePages();
 
             // app.Run(async (context) =>
             // {

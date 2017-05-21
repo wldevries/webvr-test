@@ -37,15 +37,22 @@ import "../node_modules/es6-promise/dist/es6-promise.js";
 
 // three.js 3d library
 //import import * as THREE from 'three';
-import {WebGLRenderer, Scene, BackSide, MeshNormalMaterial, MeshBasicMaterial, RepeatWrapping, BoxGeometry, Mesh, TextureLoader, PerspectiveCamera} from 'three';
+import
+{
+  WebGLRenderer, Scene, PointLight, PerspectiveCamera,
+  MeshNormalMaterial, MeshBasicMaterial, MeshPhongMaterial, BackSide,
+  BoxGeometry, Mesh, TextureLoader, 
+  Color, RepeatWrapping
+} from 'three';
 
 // VRControls.js acquires positional information from connected VR devices and applies the transformations to a three.js camera object.
-// import "../node_modules/three/examples/js/controls/VRControls.js";
 const VRControls = require('imports-loader?THREE=three!exports-loader?THREE.VRControls!../node_modules/three/examples/js/controls/VRControls');
 
 // VREffect.js handles stereo camera setup and rendering.
-// import "../node_modules/three/examples/js/effects/VREffect.js";
 const VREffect = require('imports-loader?THREE=three!exports-loader?THREE.VREffect!../node_modules/three/examples/js/effects/VREffect');
+
+// VREffect.js handles stereo camera setup and rendering.
+const OBJLoader = require('imports-loader?THREE=three!exports-loader?THREE.OBJLoader!../node_modules/three/examples/js/loaders/OBJLoader');
 
 // A polyfill for WebVR using the Device{Motion,Orientation}Event API.
 import "webvr-polyfill";
@@ -98,16 +105,9 @@ function onLoad() {
   var loader = new TextureLoader();
   loader.load('img/box.png', onTextureLoaded);
 
-  // Create 3D objects.
-  var geometry = new BoxGeometry(0.5, 0.5, 0.5);
-  var material = new MeshNormalMaterial();
-  cube = new Mesh(geometry, material);
-
-  // Position cube mesh to be right in front of you.
-  cube.position.set(0, controls.userHeight, -1);
-
-  // Add cube mesh to your three.js scene
-  scene.add(cube);
+  addLight();
+  // addCube();
+  addTeapot();
 
   window.addEventListener('resize', onResize, true);
   window.addEventListener('vrdisplaypresentchange', onResize, true);
@@ -158,7 +158,50 @@ function onTextureLoaded(texture) {
   setupStage();
 }
 
+function addCube() {
+  // Create 3D objects.
+  var geometry = new BoxGeometry(0.5, 0.5, 0.5);
+  var material = new MeshNormalMaterial();
+  cube = new Mesh(geometry, material);
 
+  // Position cube mesh to be right in front of you.
+  cube.position.set(0, controls.userHeight, -1);
+
+  // Add cube mesh to your three.js scene
+  scene.add(cube);
+}
+
+function addLight() {
+  var light = new PointLight( 0xff22ff, 1, 0, 2);
+  light.position.set( -1, 1, 0 );
+  scene.add( light );
+
+  var light = new PointLight( 0x22ffff, 1, 0, 2);
+  light.position.set( 1, 3, 0 );
+  scene.add( light );
+}
+
+function addTeapot() {
+  var loader = new OBJLoader();
+
+  // load a resource
+  loader.load(
+    // resource URL
+    'models/wt_teapot.obj',
+    // Function when resource is loaded
+    function ( teapotObject ) {
+
+      for (var i in teapotObject.children) {
+          teapotObject.children[i].material = new MeshPhongMaterial({color: new Color(0x85cbcf)});
+      }
+
+      teapotObject.scale.set(0.5, 0.5, 0.5);
+      scene.add( teapotObject );
+      teapotObject.position.set(0, controls.userHeight - 0.2, -1);
+      cube = teapotObject
+    }
+  );  
+}
 
 // Request animation frame loop function
 function animate(timestamp) {
@@ -166,7 +209,8 @@ function animate(timestamp) {
   lastRenderTime = timestamp;
 
   // Apply rotation to cube mesh
-  cube.rotation.y += delta * 0.0006;
+  if (cube != undefined)
+    cube.rotation.y += delta * 0.0006;
 
   // Only update controls if we're presenting.
   if (vrButton.isPresenting()) {
