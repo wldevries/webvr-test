@@ -30,12 +30,13 @@ namespace webvr
 
             app.UseDefaultFiles();
 
+			var provider = new FileExtensionContentTypeProvider();
             var options = new StaticFileOptions
 			{
-				ContentTypeProvider = new FileExtensionContentTypeProvider()
+				ContentTypeProvider = provider,
 			};
-			((FileExtensionContentTypeProvider)options.ContentTypeProvider).Mappings.Add(
-				new KeyValuePair<string, string>(".obj", "text/plain"));
+            provider.Mappings.Add(new KeyValuePair<string, string>(".obj", "text/plain"));
+
             app.UseStaticFiles(options); 
             app.UseStaticFiles();
 
