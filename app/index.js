@@ -108,7 +108,7 @@ function onLoad() {
 
   addLight();
   // addCube();
-  //addTeapot();
+  addTeapot();
   addHouse();
 
   window.addEventListener('resize', onResize, true);
@@ -177,12 +177,12 @@ function addLight() {
   const ambient = new AmbientLight(0x404040, 1);
   scene.add(ambient);
 
-  const light1 = new PointLight( 0xff22ff, 1, 100, 2);
-  light1.position.set( -10, 3, -10 );
+  const light1 = new PointLight( 0xFF88FF, 1, 10, 2);
+  light1.position.set( -2, 3, -2 );
   scene.add(light1);
 
-  const light2 = new PointLight( 0x22ffff, 1, 100, 2);
-  light2.position.set( 10, 1, 10 );
+  const light2 = new PointLight( 0x88FFFF, 1, 10, 2);
+  light2.position.set( 2, 1, 2 );
   scene.add(light2);
 }
 
@@ -200,9 +200,10 @@ function addTeapot() {
           teapotObject.children[i].material = new MeshPhongMaterial({color: new Color(0x85cbcf)});
       }
 
-      teapotObject.scale.set(0.5, 0.5, 0.5);
+      const scale = 0.3;
+      teapotObject.scale.set(scale, scale, scale);
       scene.add( teapotObject );
-      teapotObject.position.set(0, controls.userHeight - 0.2, -1);
+      teapotObject.position.set(0, 1, -1);
       cube = teapotObject
     }
   );  
@@ -210,9 +211,9 @@ function addTeapot() {
 
 function addHouse() {
   var loader = new STLLoader();
-  loader.load('models/0e verd.stl', function ( geometry ) {
-    // const material = new MeshPhongMaterial({color: new Color(0xfff)})
-    const material = new MeshNormalMaterial({color: new Color(0xfff)})
+  loader.load('models/1e verd v10 pastoe.stl', function ( geometry ) {
+    const material = new MeshPhongMaterial({color: new Color(0x888888)})
+    //const material = new MeshNormalMaterial({color: new Color(0xfff)})
     house = new Mesh(geometry, material);
     const scale = 0.001;
     house.scale.set(scale, scale, scale);
