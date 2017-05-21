@@ -1,7 +1,7 @@
 /*
  * Debug parameters.
  */
-WebVRConfig = {
+const WebVRConfig = {
   /**
    * webvr-polyfill configuration
    */
@@ -65,6 +65,7 @@ var cube;
 var controls;
 var effect;
 var camera;
+var skybox;
 // EnterVRButton for rendering enter/exit UI.
 var vrButton;
 
@@ -130,6 +131,7 @@ function onLoad() {
   });
   document.getElementById('vr-button').appendChild(vrButton.domElement);
   document.getElementById('magic-window').addEventListener('click', function() {
+    // vrButton.requestEnterVR();
     vrButton.requestEnterFullscreen();
   });
 }
@@ -147,7 +149,7 @@ function onTextureLoaded(texture) {
   });
 
   // Align the skybox to the floor (which is at y=0).
-  let skybox = new Mesh(geometry, material);
+  skybox = new Mesh(geometry, material);
   skybox.position.y = boxSize/2;
   scene.add(skybox);
 
@@ -184,7 +186,7 @@ function onResize(e) {
 
 // Get the HMD, and if we're dealing with something that specifies
 // stageParameters, rearrange the scene.
-function setupStage() {
+function setupStage() {  
   navigator.getVRDisplays().then(function(displays) {
     if (displays.length > 0) {
       vrDisplay = displays[0];
@@ -202,8 +204,8 @@ function setStageDimensions(stage) {
   scene.remove(skybox);
 
   // Size the skybox according to the size of the actual stage.
-  var geometry = new THREE.BoxGeometry(stage.sizeX, boxSize, stage.sizeZ);
-  let skybox = new THREE.Mesh(geometry, material);
+  var geometry = new BoxGeometry(stage.sizeX, boxSize, stage.sizeZ);
+  skybox = new Mesh(geometry, material);
 
   // Place it on the floor.
   skybox.position.y = boxSize/2;
