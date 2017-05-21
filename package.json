@@ -1,13 +1,12 @@
 {
   "dependencies": {
-    "aframe": "^0.5.0",
-    "lodash": "^4.17.4",
-    "webvr-boilerplate": "0.5.0"
+    "aframe": "latest",
+    "webvr-boilerplate": "latest"
   },
   "devDependencies": {
-    "exports-loader": "^0.6.4",
-    "imports-loader": "^0.7.1",
-    "webpack": "^2.5.1"
+    "exports-loader": "latest",
+    "imports-loader": "latest",
+    "webpack": "latest"
   },
   "scripts": {
     "build": "./node_modules/.bin/webpack.cmd"

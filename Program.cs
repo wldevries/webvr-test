@@ -15,7 +15,7 @@ namespace webvr
                 .UseKestrel()
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseIISIntegration()
-                .UseUrls("http://0.0.0.0:5000")
+                .UseUrls("http://127.0.0.1:5000", "http://0.0.0.0:5000")
                 .UseStartup<Startup>()
                 .Build();
 
