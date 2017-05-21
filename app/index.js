@@ -39,7 +39,7 @@ import "../node_modules/es6-promise/dist/es6-promise.js";
 //import import * as THREE from 'three';
 import
 {
-  WebGLRenderer, Scene, PointLight, PerspectiveCamera,
+  WebGLRenderer, Scene, PointLight, AmbientLight, PerspectiveCamera,
   MeshNormalMaterial, MeshBasicMaterial, MeshPhongMaterial, BackSide,
   BoxGeometry, Mesh, TextureLoader, 
   Color, RepeatWrapping
@@ -51,8 +51,8 @@ const VRControls = require('imports-loader?THREE=three!exports-loader?THREE.VRCo
 // VREffect.js handles stereo camera setup and rendering.
 const VREffect = require('imports-loader?THREE=three!exports-loader?THREE.VREffect!../node_modules/three/examples/js/effects/VREffect');
 
-// VREffect.js handles stereo camera setup and rendering.
 const OBJLoader = require('imports-loader?THREE=three!exports-loader?THREE.OBJLoader!../node_modules/three/examples/js/loaders/OBJLoader');
+const STLLoader = require('imports-loader?THREE=three!exports-loader?THREE.STLLoader!../node_modules/three/examples/js/loaders/STLLoader');
 
 // A polyfill for WebVR using the Device{Motion,Orientation}Event API.
 import "webvr-polyfill";
@@ -68,7 +68,6 @@ var vrDisplay;
 var boxSize = 5;
 // Various global THREE.Objects.
 var scene;
-var cube;
 var controls;
 var effect;
 var camera;
@@ -76,6 +75,8 @@ var skybox;
 // EnterVRButton for rendering enter/exit UI.
 var vrButton;
 
+var cube;
+var house;
 
 function onLoad() {
   // Setup three.js WebGL renderer. Note: Antialiasing is a big performance hit.
@@ -107,7 +108,8 @@ function onLoad() {
 
   addLight();
   // addCube();
-  addTeapot();
+  //addTeapot();
+  addHouse();
 
   window.addEventListener('resize', onResize, true);
   window.addEventListener('vrdisplaypresentchange', onResize, true);
@@ -149,9 +151,9 @@ function onTextureLoaded(texture) {
   });
 
   // Align the skybox to the floor (which is at y=0).
-  skybox = new Mesh(geometry, material);
-  skybox.position.y = boxSize/2;
-  scene.add(skybox);
+  // skybox = new Mesh(geometry, material);
+  // skybox.position.y = boxSize/2;
+  // scene.add(skybox);
 
   // For high end VR devices like Vive and Oculus, take into account the stage
   // parameters provided.
@@ -172,13 +174,16 @@ function addCube() {
 }
 
 function addLight() {
-  var light = new PointLight( 0xff22ff, 1, 0, 2);
-  light.position.set( -1, 1, 0 );
-  scene.add( light );
+  const ambient = new AmbientLight(0x404040, 1);
+  scene.add(ambient);
 
-  var light = new PointLight( 0x22ffff, 1, 0, 2);
-  light.position.set( 1, 3, 0 );
-  scene.add( light );
+  const light1 = new PointLight( 0xff22ff, 1, 100, 2);
+  light1.position.set( -10, 3, -10 );
+  scene.add(light1);
+
+  const light2 = new PointLight( 0x22ffff, 1, 100, 2);
+  light2.position.set( 10, 1, 10 );
+  scene.add(light2);
 }
 
 function addTeapot() {
@@ -203,6 +208,19 @@ function addTeapot() {
   );  
 }
 
+function addHouse() {
+  var loader = new STLLoader();
+  loader.load('models/0e verd.stl', function ( geometry ) {
+    // const material = new MeshPhongMaterial({color: new Color(0xfff)})
+    const material = new MeshNormalMaterial({color: new Color(0xfff)})
+    house = new Mesh(geometry, material);
+    const scale = 0.001;
+    house.scale.set(scale, scale, scale);
+    house.position.set(-3, 0, 2);
+    scene.add(house);
+  });
+}
+
 // Request animation frame loop function
 function animate(timestamp) {
   var delta = Math.min(timestamp - lastRenderTime, 500);
@@ -216,6 +234,7 @@ function animate(timestamp) {
   if (vrButton.isPresenting()) {
     controls.update();
   }
+  
   // Render the scene.
   effect.render(scene, camera);
 
