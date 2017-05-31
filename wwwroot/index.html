@@ -1,46 +1,123 @@
-<html lang="en">
+<html>
 <head>
-<title>Web VR boilerplate</title>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0, shrink-to-fit=no">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes" />
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-<style>
-body {
-  width: 100%;
-  height: 100%;
-  background-color: #000;
-  color: #fff;
-  margin: 0px;
-  padding: 0;
-  overflow: hidden;
-}
-/* Position the button on the bottom of the page. */
-#ui {
-  position: absolute;
-  bottom: 10px;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  text-align: center;
-  font-family: 'Karla', sans-serif;
-  z-index: 1;
-}
-a#magic-window {
-  display: block;
-  color: white;
-  margin-top: 1em;
-}
-</style>
+<script src="dist/aframe-master.js"></script>
+<script src="dist/STLLoader.js"></script>
+
+<script>
+AFRAME.registerComponent('log', {
+  schema: {type: 'string'},
+
+  init: function () {
+    var stringToLog = this.data;
+    console.log(stringToLog);
+  }
+});
+
+AFRAME.registerComponent('dorotate', {
+  schema: {
+    speed: {type: 'number' }
+  },
+
+  tick: function () {
+    const rotation = this.el.getAttribute('rotation').y + this.data.speed;
+    this.el.setAttribute('rotation', 'y', rotation);
+  }
+});
+
+AFRAME.registerComponent('collider-check', {
+  dependencies: ['raycaster'],
+
+  init: function () {
+    this.el.addEventListener('raycaster-intersected', function () {
+      console.log('Player hit something!');
+    });
+  }
+});
+
+AFRAME.registerComponent('cursor-listener', {
+  init: function () {
+    var COLORS = ['red', 'green', 'blue'];
+    this.el.addEventListener('click', function (evt) {
+      var randomIndex = Math.floor(Math.random() * COLORS.length);
+      this.setAttribute('material', 'color', COLORS[randomIndex]);
+      evt.detail.intersectedEl.setAttribute('material', 'color', COLORS[randomIndex]);
+      console.log('I was clicked at: ', evt.detail.intersection.point);
+    });
+  }
+});
+
+AFRAME.registerComponent('load-stl', {
+  schema: {type: 'string' },
+  init: function() {
+    var loader = new THREE.STLLoader();
+    const src = this.data;
+    const el = this.el;
+    loader.load(src, function ( geometry ) {
+      const material = new THREE.MeshPhongMaterial({color: new THREE.Color(0x888888)})
+      house = new THREE.Mesh(geometry, material);
+      el.setObject3D('mesh', house);
+    });
+  }
+});
+
+</script>
 </head>
 
-<body>
-  <div id="ui">
-    <div id="vr-button"></div>
-    <a id="magic-window" href="#">Try it without a headset</a>
-  </div>
-</body>
+<a-scene log="Hello, Scene!">
+  <a-assets>
+    <a-asset-item id="tree-obj" src="/models/wt_teapot.obj"></a-asset-item>
+    <img id="grass-tex" src="/img/grass.jpg"></a-asset-item>
+  </a-assets>
 
-<script src="dist/bundle.js"></script>
+  <!--<a-entity camera="userHeight: 1.6" look-controls wasd-controls>
+    <a-entity cursor="fuse: true; fuseTimeout: 500" cursor-listener
+              raycaster="far: 20; interval: 1000; objects: .collidable"
+              position="0 0 -1"
+              geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03"
+              material="color: gray; shader: flat">
+      <a-animation begin="click" easing="ease-in" attribute="scale"
+                  fill="backwards" from="0.1 0.1 0.1" to="1 1 1"></a-animation>
+      <a-animation begin="cursor-fusing" easing="ease-in" attribute="scale"
+                  fill="forwards" from="1 1 1" to="0.1 0.1 0.1"></a-animation>
+    </a-entity>
+  </a-entity>-->
+
+
+  <a-plane src="#grass-tex" height="100" width="100" rotation="-90 0 0"></a-plane>
+
+  <a-entity position="3 0 -3" rotation="0 90 0">
+    <a-entity load-stl="models/0e verd.stl"
+    scale="0.001 0.001 0.001" 
+              position="0 0 0">
+    </a-entity>
+    <a-entity load-stl="models/1e verd v10 pastoe.stl" 
+    scale="0.001 0.001 0.001" 
+              position="0 2.4 0">
+    </a-entity>            
+    <a-entity load-stl="models/2e verd v10.stl" 
+    scale="0.001 0.001 0.001" 
+              position="0 4.8 0">
+    </a-entity>            
+    <a-entity load-stl="models/3e verd v7.stl"
+    scale="0.001 0.001 0.001" 
+              position="0 7.2 0">
+    </a-entity>
+  </a-entity>
+  
+  <a-entity light="type: ambient; color: #BBB"></a-entity>
+  <a-entity light="type: directional; color: #FFF; intensity: 0.6" position="-0.5 1 1">    
+  </a-entity>
+
+  <!--<a-entity geometry="primitive: cylinder" position="-1.5 1 -3"
+            class="collidable"
+            material="src: #grass-tex; color: #696969; roughness: 1; metalness: 0"></a-entity>-->
+
+  <!--<a-entity obj-model="obj: #tree-obj" position="0 1 -3"
+            dorotate="speed: 0.1"
+            class="collidable"
+            material="src: #grass-tex; color: #696969; roughness: 1; metalness: 0"></a-entity>            -->
+
+</a-entity>
+</a-scene>
 
 </html>
